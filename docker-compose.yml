@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://lakshiya:change-me@db:5432/lakshiya_ads
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: lakshiya_ads
+      POSTGRES_USER: lakshiya
+      POSTGRES_PASSWORD: change-me
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lakshiya -d lakshiya_ads"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  n8n:
+    image: n8nio/n8n:latest
+    profiles: ["automation"]
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_ENCRYPTION_KEY: replace-before-production
+    volumes:
+      - n8n_data:/home/node/.n8n
+volumes:
+  postgres_data:
+  n8n_data:

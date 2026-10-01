@@ -1,0 +1,27 @@
+{
+  "name": "Lakshiya Dhotis - Weekly Campaign Approval",
+  "nodes": [
+    {
+      "parameters": {"rule": {"interval": [{"field": "weeks", "triggerAtDay": ["monday"], "triggerAtHour": 9}]}},
+      "id": "schedule-trigger",
+      "name": "Monday Approval Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {"url": "={{$env.LAKSHIYA_API_URL}}/campaigns", "sendHeaders": true, "headerParameters": {"parameters": [{"name": "X-Admin-Key", "value": "={{$env.LAKSHIYA_API_ADMIN_KEY}}"}]}},
+      "id": "list-campaigns",
+      "name": "Get Draft Campaigns",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 300]
+    }
+  ],
+  "connections": {"Monday Approval Trigger": {"main": [[{"node": "Get Draft Campaigns", "type": "main", "index": 0}]]}},
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "versionId": "stage-3-template",
+  "meta": {"templateCredsSetupCompleted": false},
+  "tags": []
+}

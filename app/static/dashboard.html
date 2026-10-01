@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lakshiya Dhotis | Ads Operations</title>
+  <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+  <main class="shell">
+    <header><div><p class="eyebrow">LAKSHIYA DHOTIS</p><h1>Ads operations</h1><p class="muted">Owner-controlled campaigns, catalog, and leads.</p><p id="session-message" role="status"></p></div><div class="actions"><button id="refresh" type="button" class="secondary">Refresh</button><button id="logout" type="button" class="secondary" hidden>Log out</button></div></header>
+    <section id="key-panel" class="panel key-panel"><h2>Unlock local dashboard</h2><p>Your dashboard password is the API_ADMIN_KEY value in your local .env file. This is separate from your Meta access token and App Secret.</p><p>To copy it, run <code>.\scripts\copy-dashboard-password.ps1</code> in the project PowerShell terminal, then paste it below. The dashboard keeps it only in this browser tab.</p><form id="key-form"><input id="admin-key" type="password" required aria-label="Dashboard password" placeholder="Paste dashboard password"><button>Open dashboard</button></form><p id="key-error" class="error"></p></section>
+    <div id="app" hidden>
+      <section class="panel workflow"><h2>Budget mode</h2><p>Applies to the selected draft. Existing approved or Meta campaigns require a new draft and fresh approval.</p>
+        <form id="budget-mode-form">
+          <div class="actions"><label class="confirmation"><input type="radio" name="mode" value="FIXED">Fixed</label><label class="confirmation"><input type="radio" name="mode" value="DYNAMIC" checked>Dynamic</label></div>
+          <div id="budget-fixed-fields" hidden><label>Fixed daily limit (INR)<input id="budget-fixed" type="number" min="1" max="150" step="1" value="150"></label></div>
+          <div id="budget-range-fields" class="actions"><label>Approved daily minimum (INR)<input id="budget-min" type="number" min="150" max="200" step="1" value="150"></label><label>Approved daily maximum (INR)<input id="budget-max" type="number" min="150" max="200" step="1" value="200"></label></div>
+          <label>Maximum weekly spend / campaign total (INR)<input id="budget-weekly" type="number" min="1" max="1050" step="1" value="1050" required></label>
+          <p>Dynamic delivery may vary up to the approved daily maximum. The lower value is a planning target, not guaranteed spending. The weekly ceiling always applies, including when the remaining balance is below that target. The app does not automatically raise your total budget.</p>
+          <button type="submit">Save budget settings</button>
+        </form><p id="budget-mode-message" role="status"></p>
+      </section>
+      <p><a href="#campaign-history">Manage campaigns / history</a></p><section class="notice" id="delivery-notice"><strong>Campaigns need your approval.</strong> Preparing a campaign creates paused ads. Activation is a separate action that can spend your approved budget.</section>
+      <section class="cards"><article><span>Campaigns</span><b id="campaign-count">—</b></article><article><span>Ready to activate</span><b id="ready-count">—</b></article><article><span>Catalog products</span><b id="product-count">—</b></article><article><span>Leads</span><b id="lead-count">—</b></article></section>
+      <section class="grid"><article class="panel"><h2>Integration readiness</h2><div id="setup-status">Loading…</div></article><article class="panel"><h2>Create draft campaign</h2><form id="campaign-form"><label>Campaign name<input name="name" minlength="3" required placeholder="Festive dhoti collection"></label><label>Daily ad budget (INR)<input name='daily_budget_inr' type='number' min='1' step='1' required></label><label>Total campaign budget limit (INR)<input name='weekly_budget_limit_inr' type='number' min='1' step='1' required></label><p>Enter your own amounts. Owner approval is required before spending. The app never chooses or increases your budget.</p><button>Create draft</button></form><p id="campaign-message" class="message"></p></article></section>
+      <section class="panel workflow"><h2 id="campaign-history">Campaign history — run again</h2><p>Select a previous campaign or saved plan. A new draft copies its product, caption, audience and daily hours. Enter fresh budgets and dates; review and approve before launch.</p><div id="reuse-history" class="list"></div><form id="reuse-form" class="product-form"><input id="reuse-campaign" type="hidden"><p id="reuse-selected">Select a campaign from history above.</p><label>New campaign name<input name="name" minlength="3" maxlength="255" required></label><label>Daily budget (INR)<input name="daily_budget_inr" type="number" min="1" step="1" required></label><label>Total limit (INR)<input name="weekly_budget_limit_inr" type="number" min="1" step="1" required></label><label>New start date<input name="start_date" type="date" required></label><label>New end date (up to 7 days)<input name="end_date" type="date" required></label><button>Create new draft from selection</button></form><p id="reuse-message" role="status"></p></section><section class="panel workflow"><h2>Connect Meta</h2><p>Check your account, then import products from your Commerce Manager catalog. Existing products can also be added manually below.</p><div class="actions"><button id="meta-check" type="button">Check Meta connection</button><button id="meta-import" type="button">Import Meta catalog</button><button id="meta-collect" type="button" class="secondary">Update performance</button></div><p id="meta-message" class="message" role="status"></p></section>
+      <section class="panel workflow"><h2>Meta Ads MCP preparation</h2><p>MCP is not connected yet. This check tests server reachability only; it does not log in, access your ad account or change campaigns. Existing campaign operations use the Marketing API.</p><button id="mcp-check" type="button" class="secondary">Check MCP availability</button><p id="mcp-message" role="status"></p></section>
+      <section class="panel workflow"><h2>1. Set up campaign details</h2><p>Save these details before requesting approval. This version advertises a WhatsApp link and optimizes for link clicks. Instagram placements require a connected Instagram identity.</p>
+        <p id="location-message" role='status'>Search a city or state, select a result, then click Add location. Save the campaign plan to apply changes.</p><form id="location-search-form" class="actions"><label>Find an Indian city or state<input id="location-query" minlength="2" placeholder="Tamil Nadu" required></label><button>Search locations</button></form>
+        <p>Tick any matching cities or states, then add them. Search again to add more locations (up to 10).</p><div id="location-results" class="location-options" aria-label="Location search results"></div><button id="add-location" type="button" class="secondary">Add selected locations</button><div id="selected-locations" class="actions">No locations selected.</div><button id="clear-locations" type="button" class="secondary">Clear all locations</button>
+        <div id="edit-plan-controls" class="actions"></div>
+        <form id="schedule-edit-form" class="product-form" hidden>
+          <p>Edit dates for this paused Meta campaign. Budget stays unchanged. Meta may reject a longer schedule if the budget is too small. Final launch approval is required again.</p>
+          <label>New start date<input name="start_date" type="date" required></label>
+          <label>New end date<input name="end_date" type="date" required></label>
+          <button>Review and save dates to Meta</button><button type="button" id="cancel-schedule-edit">Cancel</button>
+          <p id="schedule-edit-message" role="status"></p>
+        </form>
+        <form id="plan-form" class="product-form">
+          <label>Draft campaign<select id="plan-campaign" required></select></label><label>Product<select id="plan-product" required></select></label>
+          <label>Ad caption<textarea name="caption" required maxlength="2000" rows="3"></textarea></label>
+          <label>Start date<input name="start_date" type="date" required></label><label>End date (up to 7 days)<input name="end_date" type="date" required></label>
+          <label>Minimum age<input name="age_min" type="number" min="18" max="65" value="20" required></label><label>Maximum age<input name="age_max" type="number" min="18" max="65" value="60" required></label>
+          <label>Daily start time (India)<input name="window_start" type="time" required></label><label>Daily end time (India)<input name="window_end" type="time" required></label>
+          <button>Save campaign plan</button>
+        </form><p id="plan-message" class="message" role="status"></p><div id="plan-list" class="list"></div>
+      </section>
+      <section id="review-section" class="panel workflow"><h2>2. Review and approve</h2><p>Your saved product and plan appear below automatically. View the photo, approve the plan, then continue to ad preparation below. Approval does not launch ads.</p>
+        <p id="catalog-empty-help" hidden>No available catalog products yet. <a href="#product-form">Add your first product below</a>, then return here to select it.</p>
+        <p id="approval-message" class="message" role="status"></p><div id="approval-list" class="list"></div>
+        <p>Pay Meta directly through your ad account billing. This app does not collect or verify payments. No email request or payment confirmation is required here.</p>
+      </section>
+      <section id="launch-section" class="panel workflow"><h2>3. Prepare and activate on Meta</h2><p>Prepare creates paused objects in Ads Manager. Activate can start spending during your approved hours and enables scheduled pause/resume. Manual pause disables automatic resumption.</p><div id="live-campaigns" class="list"></div><p id="live-message" class="message" role="status"></p></section>
+      <section id="manage-campaigns" class="panel workflow"><h2>Manage campaigns</h2><p>Delete removes an unused draft and its plan permanently. Archive hides an unused draft while keeping its records. Campaigns with Meta activity or an unresolved operation are protected.</p><p id="manage-message" role="status"></p><div id="campaigns" class="list"></div></section><section class="panel workflow"><h2>Recent leads</h2><div id="leads" class="list"></div></section>
+      <section class="panel"><h2>Add catalog product</h2><form id="product-form" class="product-form"><label>Product code<input name="product_code" required placeholder="DHOTI-001"></label><label>Name<input name="name" required placeholder="Premium cotton dhoti"></label><label>Category<input name="category" required placeholder="Dhotis"></label><label>Price (₹)<input name="price_inr" type="number" min="1" required placeholder="999"></label><label>Image URL<input name="image_url" type="url" required placeholder="https://…"></label><label>Description<input name="description" placeholder="Optional"></label><button>Add product</button></form><p id="product-message" class="message"></p></section>
+    </div>
+  </main><script src="/static/dashboard.js?v=budget-diagnosis-16"></script>
+</body></html>
